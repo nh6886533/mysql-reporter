@@ -1,5 +1,5 @@
 # mysql reporter
- generate report for mysql data
+ generate report for mysql data,use config file to load parameters.
 
 used module:  
 mysql-connector-python
