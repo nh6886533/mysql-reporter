@@ -84,12 +84,19 @@ class NotFoundFileError(Exception):
 
 class ConfigureHandler:
 	def __init__(self, path):		
-		self.config = configparser.ConfigParser()
-		#判断配置文件是否存在
+		self.config = path
+
+	@property
+	def config(self):
+		return self._config
+	
+	@config.setter
+	def config(self, path):
 		if 'config' in os.listdir(path):
-			self.config.read(os.path.join(path,'config'))
+			self._config = configparser.ConfigParser()
+			self._config.read(os.path.join(path, 'config'))
 		else:
-			raise NotFoundFileError("Can't find config file at "+os.getcwd()+',config file should be at the same path as the main.py')
+			raise NotFoundFileError("Can't find config file at \""+os.getcwd()+'\",config file should be at the same path as the main.py')
 
 	def get_dbinfo(self):
 		'''获取数据库登陆信息
@@ -164,7 +171,7 @@ def get_oneday(db_info,table,interface,max_bw,start_time,end_time,direction):
 		return 'None'
 
 def main(path):
-	config = ConfigureHandler(os.path.join(path))
+	config = ConfigureHandler(path)
 	db_info = config.get_dbinfo()
 	sql_info = config.get_sqlinfo()
 	date_range = get_timerange(**config.get_timeinfo())
