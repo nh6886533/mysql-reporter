@@ -92,6 +92,7 @@ class ConfigureHandler:
 	
 	@config.setter
 	def config(self, path):
+		#检查config文件是否存在于path中，如果不存在则抛出错误提示
 		if 'config' in os.listdir(path):
 			self._config = configparser.ConfigParser()
 			self._config.read(os.path.join(path, 'config'))
@@ -163,6 +164,7 @@ def get_oneday(db_info,table,interface,max_bw,start_time,end_time,direction):
 	if db.isconnected():
 		res = db.readdb(sql,args)
 		db.close()
+		#判断返回的结果是否有效，当查询日期没有数据时结果为空，返回'None'
 		if res[0][0]:
 			return str(round(res[0][0]/int(max_bw),4))
 		else:
