@@ -126,8 +126,7 @@ class ConfigureHandler:
 		tables = self.config['sql_info']['tables'].split(',')
 		interfaces = self.config['sql_info']['column'].split(',')
 		sql_info = {
-			'args':list(zip(tables,interfaces,self.get_max_bw(tables,interfaces))),
-#				self.config['sql_info']['max_bw'].split(','))#修改成get_max_bw列表				
+			'args':list(zip(tables,interfaces,self.get_max_bw(tables,interfaces))),	
 			'bw_direction':self.config['sql_info']['bw_direction']
 		}
 		return sql_info
@@ -188,22 +187,6 @@ def get_oneday(db_info,table,interface,max_bw,start_time,end_time,direction):
 	else:
 		return 'None'
 
-def get_max_bw(db_info,devs,interfaces):
-	'''得到线路的最大带宽
-	tables：列表
-	interfaces：列表
-	返回各接口带宽最大值的列表
-	'''
-	res = []
-	db = DbHandler(**db_info)
-	if db.isconnected():
-		for dev,interface in list(zip(devs,interfaces)):
-			sql = "SELECT bw FROM "+'circuit_info'+" where dev=%s and interface=%s"
-			args = (dev,interface)
-			res.append(db.readdb(sql, args)[0][0])
-		db.close()
-	return res
-
 def main(path):
 	config = ConfigureHandler(path)
 	db_info = config.get_dbinfo()
@@ -215,7 +198,6 @@ def main(path):
 		print('calculating data at '+date)
 		line = date
 		for table,interface,max_bw in sql_info['args']:			
-#			print(' '.join([date,table,interface]), end=' ')
 			print(table,interface,max_bw)
 			line += ','+get_oneday(
 				db_info,
@@ -236,11 +218,6 @@ def main(path):
 
 if __name__ == '__main__':
 	main(os.getcwd())
-#	config = ConfigureHandler(r'D:\PG\GitHub\repo\mysql reporter\mysql-reporter')
-#	db_info = config.get_dbinfo()
-#	devs=['RC07_NL_AR76_2','RC07_JY_DS45_1','RC07_NL_AR76_2']
-#	interfaces=['GigabitEthernet7/3/1','TenGigabitEthernet2/1','GigabitEthernet4/0/0']
-#	print(get_max_bw(db_info,devs,interfaces))
 
 
 		
