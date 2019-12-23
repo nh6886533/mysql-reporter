@@ -123,14 +123,29 @@ class ConfigureHandler:
 	def get_sqlinfo(self):
 		'''获取需要计算的表和相关sql语句信息
 		'''
+		tables = self.config['sql_info']['tables'].split(',')
+		interfaces = self.config['sql_info']['column'].split(',')
 		sql_info = {
-			'args':list(zip(self.config['sql_info']['tables'].split(','),
-				self.config['sql_info']['column'].split(','),
-				self.config['sql_info']['max_bw'].split(','))
-			),
+			'args':list(zip(tables,interfaces,self.get_max_bw(tables,interfaces))),	
 			'bw_direction':self.config['sql_info']['bw_direction']
 		}
 		return sql_info
+
+	def get_max_bw(self,devs,interfaces):
+		'''得到线路的最大带宽
+		tables：列表
+		interfaces：列表
+		返回各接口带宽最大值的列表
+		'''
+		res = []
+		db = DbHandler(**self.get_dbinfo())
+		if db.isconnected():
+			for dev,interface in list(zip(devs,interfaces)):
+				sql = "SELECT bw FROM "+'circuit_info'+" where dev=%s and interface=%s"
+				args = (dev,interface)
+				res.append(db.readdb(sql, args)[0][0])
+			db.close()
+		return res
 
 def get_timerange(start,end,skip_weekend):
 	'''获得一个时间全段
@@ -182,8 +197,7 @@ def main(path):
 	for date in date_range:
 		print('calculating data at '+date)
 		line = date
-		for table,interface,max_bw in sql_info['args']:			
-#			print(' '.join([date,table,interface]), end=' ')
+		for table,interface,max_bw in sql_info['args']:
 			line += ','+get_oneday(
 				db_info,
 				table,
@@ -203,4 +217,6 @@ def main(path):
 
 if __name__ == '__main__':
 	main(os.getcwd())
+
+
 		
