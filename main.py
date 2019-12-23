@@ -197,8 +197,7 @@ def main(path):
 	for date in date_range:
 		print('calculating data at '+date)
 		line = date
-		for table,interface,max_bw in sql_info['args']:			
-			print(table,interface,max_bw)
+		for table,interface,max_bw in sql_info['args']:
 			line += ','+get_oneday(
 				db_info,
 				table,
