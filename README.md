@@ -23,5 +23,4 @@ skip_weekend = True
 #bw_direction should be 'in' or 'out'  
 tables = table1,table2  
 column = GigabitEthernet7/3/1,TenGigabitEthernet2/1  
-max_bw = 400,10000  
 bw_direction = in  
